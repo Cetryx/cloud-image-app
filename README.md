@@ -1,25 +1,27 @@
-# Cloud Image App
+# Cloud and DevOps Engineering
 
-## Projektname
+## Cloud Image App
+
+## Project Name
 
 `cloud-image-app`
 
-## Ziel von Part I
+## Goal of Part I
 
-Part I erstellt die Basis-Infrastruktur fuer eine Cloud Image App in Azure mit Terraform.
+Part I creates the basic Azure infrastructure for a Cloud Image App with Terraform.
 
-Der aktuelle Stand erstellt:
+The current setup creates:
 
-- eine Azure Resource Group
-- einen Azure Storage Account
-- einen privaten Blob Container fuer Bilder
-- einen privaten Blob Container fuer Terraform Remote State
-- einen Azure Key Vault
-- RBAC-Rollen fuer die aktuell angemeldete Azure Identity
+- an Azure Resource Group
+- an Azure Storage Account
+- a private Blob container for images
+- a private Blob container for Terraform remote state
+- an Azure Key Vault
+- RBAC role assignments for the currently authenticated Azure identity
 
-App Service Ressourcen sind noch nicht erstellt. `terraform/appservice.tf` ist aktuell leer und kann in einem spaeteren Teil ergaenzt werden.
+App Service resources are not created yet. `terraform/appservice.tf` is currently empty and can be added in a later project part.
 
-## Ordnerstruktur
+## Folder Structure
 
 ```text
 .
@@ -53,96 +55,94 @@ App Service Ressourcen sind noch nicht erstellt. `terraform/appservice.tf` ist a
 `-- README.md
 ```
 
-## Voraussetzungen
+## Prerequisites
 
-Vor dem Ausfuehren der Terraform-Definition muessen diese Voraussetzungen erfuellt sein:
+Before running the Terraform definition, the following prerequisites must be available:
 
-- Azure Account oder Azure for Students Subscription
-- Azure CLI installiert
-- Terraform installiert
-- PowerShell oder VS Code Terminal
-- Azure Login wurde mit `az login` ausgefuehrt
-- `terraform/main.tfvars` wurde lokal aus `terraform/main.tfvars.example` erstellt
+- Azure account or Azure for Students subscription
+- Azure CLI installed
+- Terraform installed
+- PowerShell or VS Code terminal
+- Azure login completed with `az login`
+- `terraform/main.tfvars` created locally from `terraform/main.tfvars.example`
 
-Der Azure Login muss vor Terraform ausgefuehrt werden:
-
+Azure login must be completed before running Terraform:
 
 ```powershell
 az login
 ```
 
-Danach sollte die richtige Subscription ausgewaehlt sein:
+After login, check that the correct subscription is selected:
 
 ```powershell
 az account show
 ```
 
-Falls noetig, kann die Subscription gesetzt werden:
+If required, set the subscription manually:
 
 ```powershell
 az account set --subscription "<subscription-id>"
 ```
 
-## Lokale Variablen
+## Local Variables
 
-Die Datei `terraform/main.tfvars` enthaelt lokale Werte wie Subscription ID und Tenant ID. Diese Datei soll nicht ins Git Repository committed werden.
+The file `terraform/main.tfvars` contains local values such as the subscription ID and tenant ID. This file must not be committed to the Git repository.
 
-Deshalb gibt es die Vorlage `terraform/main.tfvars.example`. Eine neue Person erstellt daraus lokal ihre eigene `main.tfvars`:
+The repository therefore includes the template file `terraform/main.tfvars.example`. A new user creates their own local `main.tfvars` from this template:
 
 ```powershell
 Copy-Item .\terraform\main.tfvars.example .\terraform\main.tfvars
 ```
 
-Danach muessen in `terraform/main.tfvars` mindestens diese Werte angepasst werden:
+After creating the file, at least these values must be updated in `terraform/main.tfvars`:
 
 - `subscription_id`
 - `tenant_id`
 
-`main.tfvars` ist in `.gitignore` ausgeschlossen und soll nicht committed werden, weil die Datei lokale und umgebungsspezifische Werte enthaelt.
+`main.tfvars` is excluded by `.gitignore` because it contains local and environment-specific values.
 
-## Terraform ausfuehren
+## How to Run Terraform
 
-Die Terraform-Befehle werden ueber PowerShell-Skripte im `scripts` Ordner ausgefuehrt. Die Befehle werden aus dem Hauptordner des Projekts gestartet.
+Terraform commands are executed through the PowerShell scripts in the `scripts` folder. The commands are started from the project root folder.
 
-Reihenfolge:
+Run order:
 
-1. Bei Azure anmelden:
+1. Log in to Azure:
 
 ```powershell
 az login
 ```
 
-2. Terraform initialisieren:
-
+2. Initialize Terraform:
 
 ```powershell
 .\scripts\init.ps1
 ```
 
-3. Terraform Plan pruefen:
+3. Check the Terraform plan:
 
 ```powershell
 .\scripts\plan.ps1
 ```
 
-4. Terraform Deployment ausfuehren:
+4. Apply the Terraform deployment:
 
 ```powershell
 .\scripts\apply.ps1
 ```
 
-Die Skripte wechseln automatisch in den `terraform` Ordner und fuehren dort die Terraform-Befehle aus.
+The scripts automatically switch into the `terraform` folder and run the Terraform commands there.
 
 ## Remote State
 
-Das Projekt verwendet Terraform Remote State in Azure Blob Storage. Die Backend-Konfiguration steht in `terraform/backend.tf`.
+This project uses Terraform remote state in Azure Blob Storage. The backend configuration is defined in `terraform/backend.tf`.
 
-Der State wird im Container `tfstate` als Blob `cloud-image-app.tfstate` gespeichert. Der Backend-Zugriff verwendet Azure AD Authentifizierung:
+The state is stored in the `tfstate` container as the Blob `cloud-image-app.tfstate`. Backend access uses Azure AD authentication:
 
 ```hcl
 use_azuread_auth = true
 ```
 
-Wichtig: Der Storage Account und der Container fuer den Remote State muessen vorhanden sein, bevor `terraform init` erfolgreich laufen kann. Falls das Backend noch nicht existiert, muss es einmalig vorbereitet oder gebootstrapped werden.
+Important: The Storage Account and container for the remote state must exist before `terraform init` can run successfully. If the backend does not exist yet, it must be prepared or bootstrapped once.
 
-Weitere Details stehen in `docs/7-remote-state-explanation.md`.
+More details are documented in `docs/7-remote-state-explanation.md`.
