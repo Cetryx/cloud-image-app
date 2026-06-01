@@ -1,4 +1,4 @@
-Write-Output "It's a me, it's mario..."
+Write-Output "Preparing Terraform path..."
 Write-Output "This script adds Terraform to the current terminal PATH."
 
 $terraformPath = "C:\Program Files (x86)\Terraform"
