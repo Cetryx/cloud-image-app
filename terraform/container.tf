@@ -1,15 +1,18 @@
+# The images container is private because uploaded files should not be publicly accessible by default.
 resource "azurerm_storage_container" "images" {
   name                  = local.storage_container_name
   storage_account_id    = azurerm_storage_account.main.id
   container_access_type = "private"
 }
 
+# The tfstate container is private because Terraform state can contain sensitive infrastructure data.
 resource "azurerm_storage_container" "tfstate" {
   name                  = "tfstate"
   storage_account_id    = azurerm_storage_account.main.id
   container_access_type = "private"
 }
 
+# The current Azure identity needs Blob Data permissions to read and write remote Terraform state.
 resource "azurerm_role_assignment" "current_user_storage_blob_data_contributor" {
   scope                = azurerm_storage_account.main.id
   role_definition_name = "Storage Blob Data Contributor"

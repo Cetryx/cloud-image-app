@@ -1,3 +1,4 @@
+# Remote state is stored in Azure Blob Storage so the state is not only stored locally.
 terraform {
   backend "azurerm" {
     resource_group_name  = "rg-cloud-image-app-tf"
