@@ -19,10 +19,13 @@ variables:
 steps:
   - checkout: self
 
-  - task: UsePythonVersion@0
-    displayName: "Use Python 3.11"
+  - task: PowerShell@2
+    displayName: "Check Python installation"
     inputs:
-      versionSpec: "3.11"
+      targetType: "inline"
+      script: |
+        python --version
+        python -m pip --version
 
   - task: PowerShell@2
     displayName: "Install app dependencies"
