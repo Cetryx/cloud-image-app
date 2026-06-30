@@ -15,7 +15,7 @@ pool:
 variables:
   resourceGroupName: "rg-cloud-image-app-tf"
   webAppName: "app-cloud-img-tf-u94m0d"
-  pythonExe: "C:\\Users\\azureuser\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"
+  pythonExe: "C:\\Program Files\\Python311\\python.exe"
 
 steps:
   - checkout: self
