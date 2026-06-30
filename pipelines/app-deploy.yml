@@ -15,6 +15,7 @@ pool:
 variables:
   resourceGroupName: "rg-cloud-image-app-tf"
   webAppName: "app-cloud-img-tf-u94m0d"
+  pythonExe: "C:\\Users\\azureuser\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"
 
 steps:
   - checkout: self
@@ -24,23 +25,23 @@ steps:
     inputs:
       targetType: "inline"
       script: |
-        python --version
-        python -m pip --version
+        & "$(pythonExe)" --version
+        & "$(pythonExe)" -m pip --version
 
   - task: PowerShell@2
     displayName: "Install app dependencies"
     inputs:
       targetType: "inline"
       script: |
-        python -m pip install --upgrade pip
-        python -m pip install -r "$(Build.SourcesDirectory)\app\requirements.txt"
+        & "$(pythonExe)" -m pip install --upgrade pip
+        & "$(pythonExe)" -m pip install -r "$(Build.SourcesDirectory)\app\requirements.txt"
 
   - task: PowerShell@2
     displayName: "Validate Python code"
     inputs:
       targetType: "inline"
       script: |
-        python -m py_compile "$(Build.SourcesDirectory)\app\app.py"
+        & "$(pythonExe)" -m py_compile "$(Build.SourcesDirectory)\app\app.py"
 
   - task: PowerShell@2
     displayName: "Deploy app to Azure App Service"
