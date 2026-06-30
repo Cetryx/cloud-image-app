@@ -13,8 +13,8 @@ The Azure provider receives the subscription and tenant from input variables.
 
 `backend.tf` configures remote state in Azure Blob Storage:
 
-- Resource Group: `rg-cloud-image-app-tf`
-- Storage Account: `stcloudimgtfu94m0d`
+- Resource Group: `rg-cloud-image-app-tfstate`
+- Storage Account: `stcloudimgtfstateu94m0d`
 - Container: `tfstate`
 - State key: `cloud-image-app.tfstate`
 - Authentication: Azure AD
@@ -52,16 +52,22 @@ The current Terraform resources are:
 - `azurerm_resource_group.main`
 - `azurerm_storage_account.main`
 - `azurerm_storage_container.images`
-- `azurerm_storage_container.tfstate`
 - `azurerm_key_vault.main`
+- `azurerm_user_assigned_identity.app`
+- `azurerm_service_plan.main`
+- `azurerm_linux_web_app.main`
 - `azurerm_role_assignment.current_user_storage_blob_data_contributor`
 - `azurerm_role_assignment.current_user_key_vault_secrets_officer`
+- `azurerm_role_assignment.app_storage_blob_data_contributor`
+- `azurerm_role_assignment.app_key_vault_secrets_user`
 
 The Storage Account is configured as `StorageV2`, uses Standard LRS replication, requires TLS 1.2, and prevents nested items from being public.
 
-The image container and state container are both private.
+The image container is private.
 
 The Key Vault uses the Standard SKU, enables RBAC authorization, allows public network access, keeps soft-deleted vaults for 90 days, and has purge protection disabled.
+
+The Linux Web App runs on an App Service Plan and uses a user-assigned managed identity. Non-secret configuration values such as the Storage Account name, image container name, and Key Vault name are passed as app settings. No Storage Account connection string is created as a Terraform-managed secret.
 
 ## Outputs
 
@@ -70,5 +76,7 @@ The outputs expose the names of important resources:
 - Resource Group
 - Storage Account
 - image Blob container
-- Terraform state container
 - Key Vault
+- user-assigned managed identity
+- App Service Plan
+- Linux Web App

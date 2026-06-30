@@ -2,6 +2,7 @@
 *.tfstate
 *.tfstate.*
 *.tfvars
+scripts/set-spn-env.ps1
 crash.log
 crash.*.log
 override.tf

@@ -2,6 +2,15 @@
 
 Terraform uses the Azure identity that is active in the local Azure CLI or environment when the Terraform command runs.
 
+For local development, the project can use the user identity from `az login`. For automation, Terraform can use a Service Principal through the standard AzureRM environment variables:
+
+- `ARM_CLIENT_ID`
+- `ARM_CLIENT_SECRET`
+- `ARM_TENANT_ID`
+- `ARM_SUBSCRIPTION_ID`
+
+The repository includes `scripts/set-spn-env.example.ps1` as a template. A real local copy should be named `scripts/set-spn-env.ps1` and must not be committed because it contains the client secret.
+
 The configuration reads this identity through:
 
 ```hcl
@@ -16,6 +25,13 @@ The currently authenticated identity receives two roles:
 - `Key Vault Secrets Officer` on the Key Vault
 
 These assignments allow the identity running Terraform to work with Blob data and manage Key Vault secrets after the resources are created.
+
+The application also receives its own user-assigned managed identity. This identity is attached to the Linux Web App and receives these roles:
+
+- `Storage Blob Data Contributor` on the Storage Account
+- `Key Vault Secrets User` on the Key Vault
+
+This allows the application to use Azure RBAC for resource access instead of storing a Storage Account connection string in code or in Terraform-managed secrets.
 
 The Azure provider is configured with:
 

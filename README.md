@@ -15,11 +15,16 @@ The current setup creates:
 - an Azure Resource Group
 - an Azure Storage Account
 - a private Blob container for images
-- a private Blob container for Terraform remote state
 - an Azure Key Vault
+- a user-assigned managed identity for the application
+- an App Service Plan
+- a Linux Web App
 - RBAC role assignments for the currently authenticated Azure identity
+- RBAC role assignments for the application managed identity
 
-App Service resources are not created yet. `terraform/appservice.tf` is currently empty and can be added in a later project part.
+The Web App is prepared as the application hosting layer. It uses a user-assigned managed identity so the application can access Azure resources through RBAC instead of hardcoded secrets.
+
+Terraform remote state is stored in a separate backend Storage Account created by the `bootstrap` configuration.
 
 ## Folder Structure
 
@@ -33,10 +38,16 @@ App Service resources are not created yet. `terraform/appservice.tf` is currentl
 |   |-- 5-repository-content.md
 |   |-- 6-terraform-definition.md
 |   `-- 7-remote-state-explanation.md
+|-- bootstrap/
+|   |-- README.md
+|   |-- main.tf
+|   |-- variables.tf
+|   `-- terraform.tfvars.example
 |-- scripts/
 |   |-- init.ps1
 |   |-- plan.ps1
 |   |-- apply.ps1
+|   |-- set-spn-env.example.ps1
 |   `-- set-path.ps1
 |-- terraform/
 |   |-- backend.tf
@@ -84,6 +95,30 @@ If required, set the subscription manually:
 az account set --subscription "<subscription-id>"
 ```
 
+## Service Principal Usage
+
+For local development, this project can be run with `az login`. For automation or pipeline usage, Terraform can authenticate with an Azure Service Principal instead.
+
+The repository contains the template:
+
+```powershell
+.\scripts\set-spn-env.example.ps1
+```
+
+Create a local copy and fill in the real Service Principal values:
+
+```powershell
+Copy-Item .\scripts\set-spn-env.example.ps1 .\scripts\set-spn-env.ps1
+```
+
+Then run it in the current terminal session before running Terraform:
+
+```powershell
+.\scripts\set-spn-env.ps1
+```
+
+The local `scripts/set-spn-env.ps1` file is excluded by `.gitignore` because it contains `ARM_CLIENT_SECRET`.
+
 ## Local Variables
 
 The file `terraform/main.tfvars` contains local values such as the subscription ID and tenant ID. This file must not be committed to the Git repository.
@@ -113,19 +148,37 @@ Run order:
 az login
 ```
 
-2. Initialize Terraform:
+2. Bootstrap the remote state storage if it does not exist yet:
+
+```powershell
+cd .\bootstrap
+Copy-Item .\terraform.tfvars.example .\terraform.tfvars
+terraform init
+terraform apply -var-file="terraform.tfvars"
+cd ..
+```
+
+3. If the backend already existed and the backend configuration changed, migrate the state:
+
+```powershell
+cd .\terraform
+terraform init -migrate-state
+cd ..
+```
+
+For a fresh setup, initialize Terraform through the project script:
 
 ```powershell
 .\scripts\init.ps1
 ```
 
-3. Check the Terraform plan:
+4. Check the Terraform plan:
 
 ```powershell
 .\scripts\plan.ps1
 ```
 
-4. Apply the Terraform deployment:
+5. Apply the Terraform deployment:
 
 ```powershell
 .\scripts\apply.ps1
@@ -143,6 +196,6 @@ The state is stored in the `tfstate` container as the Blob `cloud-image-app.tfst
 use_azuread_auth = true
 ```
 
-Important: The Storage Account and container for the remote state must exist before `terraform init` can run successfully. If the backend does not exist yet, it must be prepared or bootstrapped once.
+Important: The Storage Account and container for the remote state must exist before `terraform init` can run successfully. If the backend does not exist yet, run the Terraform configuration in the `bootstrap` folder once before `.\scripts\init.ps1`.
 
 More details are documented in `docs/7-remote-state-explanation.md`.

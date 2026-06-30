@@ -6,6 +6,7 @@ locals {
 
   key_vault_name = "kv-cloud-img-${var.variant}-${random_string.suffix.result}"
 
+  managed_identity_name = "id-${var.project_name}-${var.variant}"
   app_service_plan_name = "asp-${var.project_name}-${var.variant}"
   web_app_name          = "app-cloud-img-${var.variant}-${random_string.suffix.result}"
 
