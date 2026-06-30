@@ -34,17 +34,27 @@ resource "azurerm_linux_web_app" "main" {
   }
 
   site_config {
-    always_on = false
+    always_on        = false
+    app_command_line = "gunicorn --bind=0.0.0.0 --timeout 600 app:app"
 
     application_stack {
-      node_version = "20-lts"
+      python_version = "3.11"
     }
   }
 
   app_settings = {
-    AZURE_STORAGE_ACCOUNT_NAME   = azurerm_storage_account.main.name
-    AZURE_STORAGE_CONTAINER_NAME = azurerm_storage_container.images.name
-    AZURE_KEY_VAULT_NAME         = azurerm_key_vault.main.name
+    AZURE_STORAGE_ACCOUNT_NAME          = azurerm_storage_account.main.name
+    AZURE_STORAGE_CONTAINER_NAME        = azurerm_storage_container.images.name
+    AZURE_KEY_VAULT_NAME                = azurerm_key_vault.main.name
+    AZURE_CLIENT_ID                     = azurerm_user_assigned_identity.app.client_id
+    SCM_DO_BUILD_DURING_DEPLOYMENT      = "true"
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
+  }
+
+  logs {
+    application_logs {
+      file_system_level = "Information"
+    }
   }
 
   tags = local.common_tags

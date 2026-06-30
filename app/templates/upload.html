@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="panel narrow">
+    <h2>Upload File</h2>
+    <p>Select an image or file and upload it to the Azure Blob container.</p>
+
+    <form method="post" enctype="multipart/form-data">
+      <label for="file">File</label>
+      <input id="file" name="file" type="file" required>
+      <button type="submit">Upload</button>
+    </form>
+  </section>
+{% endblock %}

@@ -37,7 +37,13 @@ Terraform remote state is stored in a separate backend Storage Account created b
 |   |-- 4-authentication-identity-context.md
 |   |-- 5-repository-content.md
 |   |-- 6-terraform-definition.md
-|   `-- 7-remote-state-explanation.md
+|   |-- 7-remote-state-explanation.md
+|   `-- 8-part-ii-application-and-deployment.md
+|-- app/
+|   |-- app.py
+|   |-- requirements.txt
+|   |-- static/
+|   `-- templates/
 |-- bootstrap/
 |   |-- README.md
 |   |-- main.tf
@@ -47,8 +53,12 @@ Terraform remote state is stored in a separate backend Storage Account created b
 |   |-- init.ps1
 |   |-- plan.ps1
 |   |-- apply.ps1
+|   |-- deploy-app.ps1
 |   |-- set-spn-env.example.ps1
 |   `-- set-path.ps1
+|-- pipelines/
+|   |-- infrastructure.yml
+|   `-- app-deploy.yml
 |-- terraform/
 |   |-- backend.tf
 |   |-- provider.tf
@@ -199,3 +209,20 @@ use_azuread_auth = true
 Important: The Storage Account and container for the remote state must exist before `terraform init` can run successfully. If the backend does not exist yet, run the Terraform configuration in the `bootstrap` folder once before `.\scripts\init.ps1`.
 
 More details are documented in `docs/7-remote-state-explanation.md`.
+
+## Part II Application Deployment
+
+The test application is stored in the `app` folder. It provides:
+
+- Web Page 1 (`/`) to show all blobs/files in the Storage Account container with download links
+- Web Page 2 (`/upload`) to upload a file or image
+
+Manual deployment to Azure App Service:
+
+```powershell
+.\scripts\deploy-app.ps1
+```
+
+Azure DevOps pipeline YAML files are stored in the `pipelines` folder. Before using them, replace `<YOUR_SELF_HOSTED_AGENT_POOL_NAME>` with the real self-hosted Azure DevOps agent pool name.
+
+More details are documented in `docs/8-part-ii-application-and-deployment.md`.

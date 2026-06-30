@@ -4,6 +4,8 @@ The repository is organized into three main areas:
 
 - `terraform/`
 - `bootstrap/`
+- `app/`
+- `pipelines/`
 - `scripts/`
 - `docs/`
 
@@ -26,6 +28,7 @@ The `scripts` folder contains helper scripts:
 
 - `set-path.ps1` adds the Terraform executable path to the current terminal session.
 - `set-spn-env.example.ps1` is a template for setting Service Principal environment variables locally.
+- `deploy-app.ps1` packages and deploys the test application to Azure App Service.
 - `init.ps1` changes into the Terraform folder and runs `terraform init`.
 - `plan.ps1` formats, validates, and plans the Terraform deployment.
 - `apply.ps1` formats, validates, and applies the Terraform deployment.
@@ -33,5 +36,9 @@ The `scripts` folder contains helper scripts:
 The `docs` folder contains the project documentation split by topic.
 
 The `bootstrap` folder contains the one-time Terraform configuration for the remote state backend. It creates the dedicated backend Resource Group, Storage Account, `tfstate` container, and Blob Data role assignment.
+
+The `app` folder contains the Flask test application for Part II.
+
+The `pipelines` folder contains Azure DevOps YAML pipelines for infrastructure and application deployment.
 
 The `.gitignore` excludes local Terraform state, local Terraform directories, crash logs, override files, and variable files.

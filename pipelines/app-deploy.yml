@@ -1,0 +1,48 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - app/*
+      - app/**
+      - scripts/deploy-app.ps1
+      - pipelines/app-deploy.yml
+
+pool:
+  name: "cloud-image-agent-pool"
+
+variables:
+  resourceGroupName: "rg-cloud-image-app-tf"
+  webAppName: "app-cloud-img-tf-u94m0d"
+
+steps:
+  - checkout: self
+
+  - task: UsePythonVersion@0
+    displayName: "Use Python 3.11"
+    inputs:
+      versionSpec: "3.11"
+
+  - task: PowerShell@2
+    displayName: "Install app dependencies"
+    inputs:
+      targetType: "inline"
+      script: |
+        python -m pip install --upgrade pip
+        python -m pip install -r "$(Build.SourcesDirectory)\app\requirements.txt"
+
+  - task: PowerShell@2
+    displayName: "Validate Python code"
+    inputs:
+      targetType: "inline"
+      script: |
+        python -m py_compile "$(Build.SourcesDirectory)\app\app.py"
+
+  - task: PowerShell@2
+    displayName: "Deploy app to Azure App Service"
+    inputs:
+      targetType: "inline"
+      script: |
+        cd "$(Build.SourcesDirectory)"
+        .\scripts\deploy-app.ps1 -ResourceGroupName "$(resourceGroupName)" -WebAppName "$(webAppName)"

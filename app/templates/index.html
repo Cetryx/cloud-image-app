@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Stored Files</h2>
+        <p>Files currently stored in the Azure Blob container.</p>
+      </div>
+      <a class="button" href="{{ url_for('upload') }}">Upload file</a>
+    </div>
+
+    {% if blobs %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Size</th>
+              <th>Last Modified</th>
+              <th>Download</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for blob in blobs %}
+              <tr>
+                <td>{{ blob.name }}</td>
+                <td>{{ "%.1f"|format(blob.size / 1024) }} KB</td>
+                <td>{{ blob.last_modified or "unknown" }}</td>
+                <td><a href="{{ url_for('download', blob_name=blob.name) }}">Download</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty">
+        <p>No files are stored yet.</p>
+        <a class="button" href="{{ url_for('upload') }}">Upload first file</a>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

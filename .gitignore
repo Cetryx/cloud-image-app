@@ -3,6 +3,11 @@
 *.tfstate.*
 *.tfvars
 scripts/set-spn-env.ps1
+.deploy/
+.venv/
+__pycache__/
+*.pyc
+docs/pdf/
 crash.log
 crash.*.log
 override.tf

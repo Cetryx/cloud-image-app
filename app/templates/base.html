@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cloud Image App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Cloud and DevOps Engineering</p>
+          <h1>Cloud Image App</h1>
+        </div>
+        <nav>
+          <a href="{{ url_for('index') }}">Files</a>
+          <a href="{{ url_for('upload') }}">Upload</a>
+        </nav>
+      </header>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <section class="messages">
+            {% for message in messages %}
+              <p>{{ message }}</p>
+            {% endfor %}
+          </section>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>
