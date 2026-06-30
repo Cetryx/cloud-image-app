@@ -223,6 +223,24 @@ Manual deployment to Azure App Service:
 .\scripts\deploy-app.ps1
 ```
 
-Azure DevOps pipeline YAML files are stored in the `pipelines` folder. Before using them, replace `<YOUR_SELF_HOSTED_AGENT_POOL_NAME>` with the real self-hosted Azure DevOps agent pool name.
+Azure DevOps pipeline YAML files are stored in the `pipelines` folder and use the self-hosted agent pool configured for this project.
+
+This project uses the self-hosted Azure DevOps agent pool:
+
+```text
+cloud-image-agent-pool
+```
+
+The app deployment pipeline was executed successfully on the VM agent:
+
+```text
+vm-cloud-image-agent
+```
+
+The deployed app is available at:
+
+```text
+https://app-cloud-img-tf-u94m0d.azurewebsites.net/
+```
 
 More details are documented in `docs/8-part-ii-application-and-deployment.md`.

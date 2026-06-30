@@ -104,29 +104,39 @@ The repository contains two Azure DevOps pipeline YAML files:
 
 The infrastructure pipeline is intended for Terraform validation, plan, and optional apply. The apply step only runs if the pipeline variable `RUN_TERRAFORM_APPLY` is set to `true`.
 
-The app deployment pipeline installs Python dependencies, validates the Python app, and deploys the app package to Azure App Service.
+The app deployment pipeline checks the installed Python version, installs Python dependencies, validates the Python app, and deploys the app package to Azure App Service.
 
-Both pipelines use a self-hosted Azure DevOps agent pool placeholder:
+Both pipelines use the self-hosted Azure DevOps agent pool:
 
 ```yaml
 pool:
-  name: "<YOUR_SELF_HOSTED_AGENT_POOL_NAME>"
+  name: "cloud-image-agent-pool"
 ```
 
-Before running the pipelines, this placeholder must be replaced with the real Azure DevOps agent pool name.
+The app deployment pipeline uses the Azure Resource Manager service connection `sc-cloud-image-app` for the Azure CLI deployment step.
+
+The app deployment pipeline was executed successfully on the self-hosted agent.
 
 ## Agent Prerequisite
 
-The Azure DevOps agent is treated as a prerequisite for this project. The expected setup is:
+The Azure DevOps agent setup used for the successful pipeline run is:
 
-- a VM exists for the self-hosted Azure DevOps agent
-- the agent is registered once with Azure DevOps
-- the agent has Terraform installed
-- the agent has Azure CLI installed
-- the agent can run PowerShell
-- the app deployment pipeline can authenticate to Azure for `az webapp deploy`
+- Azure DevOps organization: `alicodevops`
+- Azure DevOps project: `cloud-image-app`
+- Agent pool: `cloud-image-agent-pool`
+- Agent VM: `vm-cloud-image-agent`
+- Agent name: `vm-cloud-image-agent`
+- Service connection: `sc-cloud-image-app`
 
-This is documented as a prerequisite because the lecture did not require automating the agent registration process.
+The agent VM has these tools installed:
+
+- Git
+- Azure CLI
+- Terraform
+- Python 3.11
+- PowerShell
+
+The agent is registered once with Azure DevOps and runs as a Windows service. The VM should be stopped or removed after the project is no longer needed to avoid unnecessary cost.
 
 ## Deployment Script
 
@@ -138,6 +148,12 @@ The app can be deployed manually from the project root:
 
 The script packages the `app` folder into a zip file and deploys it to the Azure App Service with Azure CLI.
 
+The deployed app URL is:
+
+```text
+https://app-cloud-img-tf-u94m0d.azurewebsites.net/
+```
+
 ## Test Application
 
 The test application is intentionally small:
@@ -148,3 +164,11 @@ The test application is intentionally small:
 - `/health` returns a simple health check response.
 
 This demonstrates that the App Service can use its managed identity to access Azure Blob Storage.
+
+The following checks were completed:
+
+- `/health` returned HTTP 200.
+- `/` loaded successfully and displayed blob files.
+- `/upload` accepted an uploaded file.
+- the uploaded file appeared in the blob list.
+- the download link returned HTTP 200.
