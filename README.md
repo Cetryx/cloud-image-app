@@ -38,7 +38,8 @@ Terraform remote state is stored in a separate backend Storage Account created b
 |   |-- 5-repository-content.md
 |   |-- 6-terraform-definition.md
 |   |-- 7-remote-state-explanation.md
-|   `-- 8-part-ii-application-and-deployment.md
+|   |-- 8-part-ii-application-and-deployment.md
+|   `-- 9-part-iii-personal-reflection.md
 |-- app/
 |   |-- app.py
 |   |-- requirements.txt
