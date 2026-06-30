@@ -16,6 +16,7 @@ variables:
   resourceGroupName: "rg-cloud-image-app-tf"
   webAppName: "app-cloud-img-tf-u94m0d"
   pythonExe: "C:\\Program Files\\Python311\\python.exe"
+  azureServiceConnection: "sc-cloud-image-app"
 
 steps:
   - checkout: self
@@ -43,10 +44,12 @@ steps:
       script: |
         & "$(pythonExe)" -m py_compile "$(Build.SourcesDirectory)\app\app.py"
 
-  - task: PowerShell@2
+  - task: AzureCLI@2
     displayName: "Deploy app to Azure App Service"
     inputs:
-      targetType: "inline"
-      script: |
+      azureSubscription: "$(azureServiceConnection)"
+      scriptType: "ps"
+      scriptLocation: "inlineScript"
+      inlineScript: |
         cd "$(Build.SourcesDirectory)"
         .\scripts\deploy-app.ps1 -ResourceGroupName "$(resourceGroupName)" -WebAppName "$(webAppName)"

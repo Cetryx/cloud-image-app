@@ -53,4 +53,9 @@ az webapp deploy `
   --type zip `
   --clean true
 
+if ($LASTEXITCODE -ne 0) {
+  Write-Error "Azure App Service deployment failed with exit code $LASTEXITCODE."
+  exit $LASTEXITCODE
+}
+
 Write-Output "Deployment complete."
